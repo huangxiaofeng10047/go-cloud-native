@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+
+  # redis 服务
+  # etcd 服务
+ etcd:
+  image: gcr.io/etcd-development/etcd:v3.5.11
+  restart: always
+  hostname: etcd
+  container_name: etcd
+  privileged: true
+  ports:
+    - 20079:2379
+    - 20080:2380
+  # 环境变量 --env
+  environment:
+    - ALLOW_NONE_AUTHENTICATION=yes
+    - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+    - ETCD_ADVERTISE_CLIENT_URLS=http://0.0.0.0:2379
+    - ETCD_DATA_DIR=/var/lib/etcd
+    - ETCD_QUOTA_BACKEND_BYTES=1777216
+  volumes:
+    # 映射宿主机储存目录
+    - ./server/etcd/data:/var/lib/etcd
+  #设置容器启动命令
+  command: ["/usr/local/bin/etcd" ]

@@ -12,6 +12,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"testing"
 	"time"
 )
@@ -41,18 +43,21 @@ func TestBcrypt(t *testing.T) {
 	}
 	fmt.Println(string(fromPassword))
 
-	user := &models.CloudUser{
-		UserName:  "admin",
-		PassWord:  string(fromPassword),
-		UserEmail: "admin@email.com",
-		Status:    1,
-		ModelTime: common.ModelTime{CreateTime: uint32(time.Now().Unix())},
+	for i := 0; i < 1000; i++ {
+
+		user := &models.CloudUser{
+			UserName:  strings.Join([]string{"admin", strconv.Itoa(i)}, "_	"),
+			PassWord:  string(fromPassword),
+			UserEmail: "admin@email.com",
+			Status:    1,
+			ModelTime: common.ModelTime{CreateTime: uint32(time.Now().Unix())},
+		}
+
+		res := db.D().Create(user)
+		if res.Error != nil {
+			panic(err)
+		}
+		fmt.Println("insert row count: ", res.RowsAffected)
 	}
 
-	res := db.D().Create(user)
-	if res.Error != nil {
-		panic(err)
-	}
-
-	fmt.Println("insert row count: ", res.RowsAffected)
 }
